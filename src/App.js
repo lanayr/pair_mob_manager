@@ -6,13 +6,14 @@ class App extends Component {
     return (
       <div className="App">
         <p className="App-intro">
-          Pair and Mob Manager 
+          Mobbing Manager 
         </p>
-        <Session />
+        <MobSession />
       </div>
     );
   }
 }
+
 
 function shuffle(array) {  
   var ctr = array.length, temp, index;  
@@ -37,27 +38,62 @@ function splitNames(names) {
   return newNames;
 }
 
-class Session extends Component {
+class MobSession extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
+      names: '',
+      time: 10,
+      numberOfMobbers: '',
+      index: 0,
       driver: '',
-      navigator: ''
+      navigator: '',
+      display: false
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleTime = this.handleTime.bind(this);
+    this.handleNames = this.handleNames.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  switchDriverNavigator() {
+    if (this.state.numberOfMobbers > this.state.index) {
+      this.setState({driver: this.state.names[this.state.index]});
+      this.setState({navigator: this.state.names[this.state.index + 1]});
+      this.setState({index: this.state.index + 1});
+    } else {
+      this.setState({driver: this.state.names[0]});
+      this.setState({navigator: this.state.names[1]});
+      this.setState({index: 1});
+    }
+  }
 
-  handleChange(event) {
-    this.setState({value: event.target.value});
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.switchDriverNavigator(),
+      5000
+    );
+  }
+
+  handleNames(event) {
+    this.setState({names: event.target.value});
+  }
+
+  handleTime(event) {
+    this.setState({time: event.target.value});
   }
 
   handleSubmit() {
-    this.setState({driver: shuffle(splitNames(this.state.value))[0]});
-    this.setState({navigator: shuffle(splitNames(this.state.value))[1]});
+    let shuffledNames = splitNames(this.state.names); 
+    this.setState({numberOfMobbers: shuffledNames.length});
+    this.setState({names: shuffledNames});
+    this.setState({driver: shuffledNames[0]});
+    this.setState({navigator: shuffledNames[1]});
+    this.setState({display: true});
   }
 
   render() {
@@ -65,43 +101,84 @@ class Session extends Component {
       <div>
         <label>
           Enter Names:
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
+          <input type="text" value={this.state.names} onChange={this.handleNames} />
+          Enter Time Interval:
+          <input type="text" value={this.state.time} onChange={this.handleTime} />
         </label>
-        <Driver value={this.state.driver}/>
-        <Navigator value={this.state.navigator}/>
         <button className='start' onClick={this.handleSubmit}>
           Start
         </button>
+        <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
+        <Clock />
       </div>
     );
   }
 }
 
-class Driver extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
+function Display(props) {
+  const isDisplayOn = props.display
+    if (isDisplayOn)  {
+      return (
+        <t>
+          <Driver value={props.driver}/>
+          <Navigator value={props.navigator}/>
+        </t>
+      );
+    }
     return (
       <div>
-        <p className="Driver">
-          The driver is: {this.props.value} 
-        </p>
       </div>
     );
-  }
 }
 
-class Navigator extends Component {
+function Driver(props) {
+  return (
+    <div>
+      <tr className="Driver">
+        The driver is: {props.value} 
+      </tr>
+    </div>
+  );
+}
+
+function Navigator(props) {
+  return (
+    <div>
+      <tr className="Navigator">
+        The navigator is: {props.value} 
+      </tr>
+    </div>
+  );
+}
+
+class Clock extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {date: new Date()};
   }
+
+  componentDidMount() {
+      this.timerID = setInterval(
+        () => this.tick(),
+        1000
+      );
+    }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }  
+
   render() {
     return (
       <div>
-        <p className="Navigator">
-          The navigator is: {this.props.value} 
-        </p>
+        <h1>Mobbing Time!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
       </div>
     );
   }
