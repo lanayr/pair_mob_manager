@@ -1,16 +1,53 @@
 .App {
+  background-color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: absolute;
+  height: 400px;
+  width: 600px;
+  margin: -100px 0 0 -200px;
+  top: 20%;
+  left: 50%;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+}
+
+.inputField {
+  text-align: left;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.Start {
   text-align: center;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-intro {
+  background-color: #2eb82e;
   font-size: large;
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px;
+}
+
+.Cancel {
+  text-align: center;
+  background-color: lightgrey;
+  font-size: large;
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.App-intro {
+  font-family: "Lucida Console", Monaco, monospace;
+  background-color: #2eb82e;
+  padding: 30px;
+  text-align: center;
+  font-size:  150%;
+  color: white;
 }
 
 @keyframes App-logo-spin {

@@ -5,10 +5,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <p className="App-intro">
-          Mobbing Manager 
-        </p>
-        <MobSession />
+        <h1 className="App-intro">
+          Pair/Mob Manager 
+        </h1>
+        <PairMobArea />
       </div>
     );
   }
@@ -33,11 +33,11 @@ function shuffle(array) {
 
 function splitNames(names) {
   var newNames = []
-  newNames = names.split(',')
+  newNames = names.split(/[ ,]+/)
   return newNames;
 }
 
-class MobSession extends Component {
+class PairMobArea extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -106,17 +106,17 @@ class MobSession extends Component {
 
   render() {
     return (
-      <div>
+      <div classNames='Form'>
         <label>
           Enter Names:
-          <input type="text" value={this.state.names} onChange={this.handleNames} />
+          <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
           Enter Time Interval:
-          <input type="text" value={this.state.time} onChange={this.handleTime} />
+          <input className="inputField" type="text" value={this.state.time} onChange={this.handleTime} />
         </label>
-        <button className='start' onClick={this.handleSubmit}>
+        <button className='Start' onClick={this.handleSubmit}>
           Start
         </button>
-        <button className='cancel' onClick={this.handleCancel}>
+        <button className='Cancel' onClick={this.handleCancel}>
           Cancel
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
@@ -130,36 +130,22 @@ function Display(props) {
   const isDisplayOn = props.display
     if (isDisplayOn)  {
       return (
-        <t>
-          <Driver value={props.driver}/>
-          <Navigator value={props.navigator}/>
-        </t>
+        <table className='Display'>
+          <tr>
+            <th>Driver</th>
+            <th>Navigator</th> 
+          </tr>
+          <tr>
+            <td>{props.driver}</td>
+            <td>{props.navigator}</td>
+          </tr>
+        </table>
       );
     }
     return (
       <div>
       </div>
     );
-}
-
-function Driver(props) {
-  return (
-    <div>
-      <tr className="Driver">
-        The driver is: {props.value} 
-      </tr>
-    </div>
-  );
-}
-
-function Navigator(props) {
-  return (
-    <div>
-      <tr className="Navigator">
-        The navigator is: {props.value} 
-      </tr>
-    </div>
-  );
 }
 
 class Clock extends React.Component {
@@ -188,7 +174,6 @@ class Clock extends React.Component {
   render() {
     return (
       <div>
-        <h1>Mobbing Time!</h1>
         <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
       </div>
     );
