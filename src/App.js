@@ -14,7 +14,6 @@ class App extends Component {
   }
 }
 
-
 function shuffle(array) {  
   var ctr = array.length, temp, index;  
   
@@ -34,7 +33,7 @@ function shuffle(array) {
 
 function splitNames(names) {
   var newNames = []
-  newNames = names.split(', ')
+  newNames = names.split(',')
   return newNames;
 }
 
@@ -54,29 +53,23 @@ class MobSession extends Component {
     this.handleTime = this.handleTime.bind(this);
     this.handleNames = this.handleNames.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   switchDriverNavigator() {
-    if (this.state.numberOfMobbers > this.state.index) {
+    if (this.state.numberOfMobbers > this.state.index +1) {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[this.state.index + 1]});
       this.setState({index: this.state.index + 1});
     } else {
-      this.setState({driver: this.state.names[0]});
-      this.setState({navigator: this.state.names[1]});
-      this.setState({index: 1});
+      this.setState({driver: this.state.names[this.state.index]});
+      this.setState({navigator: this.state.names[0]});
+      this.setState({index: 0});
     }
   }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(
-      () => this.switchDriverNavigator(),
-      5000
-    );
   }
 
   handleNames(event) {
@@ -88,12 +81,27 @@ class MobSession extends Component {
   }
 
   handleSubmit() {
-    let shuffledNames = splitNames(this.state.names); 
+    let shuffledNames = shuffle(splitNames(this.state.names)); 
     this.setState({numberOfMobbers: shuffledNames.length});
     this.setState({names: shuffledNames});
     this.setState({driver: shuffledNames[0]});
     this.setState({navigator: shuffledNames[1]});
     this.setState({display: true});
+    this.setState({index: 1});
+    this.timerID = setInterval(
+      () => this.switchDriverNavigator(),
+      (this.state.time * 1000)
+    );
+  }
+
+  handleCancel() {
+    this.setState({numberOfMobbers: ''});
+    this.setState({names: ''});
+    this.setState({driver: ''});
+    this.setState({navigator: ''});
+    this.setState({display: false});
+    this.setState({index: 0});
+    clearInterval(this.timerID);
   }
 
   render() {
@@ -107,6 +115,9 @@ class MobSession extends Component {
         </label>
         <button className='start' onClick={this.handleSubmit}>
           Start
+        </button>
+        <button className='cancel' onClick={this.handleCancel}>
+          Cancel
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
         <Clock />
@@ -162,7 +173,7 @@ class Clock extends React.Component {
         () => this.tick(),
         1000
       );
-    }
+  }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
