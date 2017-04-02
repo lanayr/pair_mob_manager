@@ -47,6 +47,8 @@ class PairMobArea extends Component {
       index: 0,
       driver: '',
       navigator: '',
+      startTime: '',
+      remainingTime: '',
       display: false
     };
 
@@ -61,16 +63,43 @@ class PairMobArea extends Component {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[this.state.index + 1]});
       this.setState({index: this.state.index + 1});
+      this.setState({startTime: new Date()});
     } else {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[0]});
       this.setState({index: 0});
+      this.setState({startTime: new Date()});
     }
   }
+
+  setRemainingTime() {
+    var rTime = this.getRemainingTime(new Date());
+    this.setState({remainingTime: rTime});
+  }
+
+  getRemainingTime(endtime){
+    var t = Date.parse(endtime) - Date.parse(this.state.startTime);
+    var seconds = Math.floor( (t/1000) % 60 );
+    var minutes = Math.floor( (t/1000/60) % 60 );
+    var hours = Math.floor( (t/(1000*60*60)) % 24 );
+    var days = Math.floor( t/(1000*60*60*24) );
+    return {
+      'total': t,
+      'days': days,
+      'hours': hours,
+      'minutes': minutes,
+      'seconds': seconds
+   };
+} 
 
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
+
+  componentWillUnmount() {
+    clearInterval(this.timerIdInterval);
+  }
+
 
   handleNames(event) {
     this.setState({names: event.target.value});
@@ -88,7 +117,10 @@ class PairMobArea extends Component {
     this.setState({navigator: shuffledNames[1]});
     this.setState({display: true});
     this.setState({index: 1});
+    this.setState({startTime: new Date()});
     this.timerID = setInterval(
+      () => this.setRemainingTime(), 1000);
+    this.timerIdInterval = setInterval(
       () => this.switchDriverNavigator(),
       (this.state.time * 1000)
     );
@@ -101,7 +133,9 @@ class PairMobArea extends Component {
     this.setState({navigator: ''});
     this.setState({display: false});
     this.setState({index: 0});
+    this.setState({remainingTime: ''});
     clearInterval(this.timerID);
+    clearInterval(this.timerIdInterval);
   }
 
   render() {
@@ -120,7 +154,7 @@ class PairMobArea extends Component {
           Cancel
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
-        <Clock />
+        <Timer timeLeft={this.state.remainingTime} />
       </div>
     );
   }
@@ -130,10 +164,10 @@ function Display(props) {
   const isDisplayOn = props.display
     if (isDisplayOn)  {
       return (
-        <table className='Display'>
+        <table className="Display">
           <tr>
-            <th>Driver</th>
-            <th>Navigator</th> 
+            <th className="Driver">Driver</th>
+            <th className="Navigator">Navigator</th> 
           </tr>
           <tr>
             <td>{props.driver}</td>
@@ -148,36 +182,19 @@ function Display(props) {
     );
 }
 
-class Clock extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {date: new Date()};
+function Timer(props) {
+  const t = props.timeLeft;
+  if (t)  {
+  return (
+    <div>
+     minutes: {t.minutes} seconds: {t.seconds}
+    </div>
+  );
   }
-
-  componentDidMount() {
-      this.timerID = setInterval(
-        () => this.tick(),
-        1000
-      );
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick() {
-    this.setState({
-      date: new Date()
-    });
-  }  
-
-  render() {
-    return (
-      <div>
-        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
-      </div>
-    );
-  }
+  return (
+    <div>
+    </div>
+  );
 }
 
 export default App;

@@ -12,6 +12,21 @@
   border-radius: 4px;
 }
 
+.Display {
+  background-color: white;
+  position: relative;
+  margin: 0 auto;
+ border-spacing: .5rem;
+}
+
+.Driver {
+  background-color: yellow;
+}
+
+.Navigator {
+  background-color: lightgrey;
+}
+
 .inputField {
   text-align: left;
   width: 100%;
@@ -35,7 +50,7 @@
 
 .Cancel {
   text-align: center;
-  background-color: lightgrey;
+  background-color: #ff0000;
   font-size: large;
   color: white;
   border: 1px solid #ccc;
