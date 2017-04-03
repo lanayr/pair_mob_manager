@@ -9,6 +9,7 @@
   "devDependencies": {
     "react-scripts": "0.9.5"
   },
+  "homepage": "https://lanayr.github.io/pair_mob_manager",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

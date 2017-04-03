@@ -6,7 +6,7 @@ class App extends Component {
     return (
       <div className="App">
         <h1 className="App-intro">
-          Pair/Mob Manager 
+          Pair/Mob Space 
         </h1>
         <PairMobArea />
       </div>
@@ -62,11 +62,15 @@ class PairMobArea extends Component {
     if (this.state.numberOfMobbers > this.state.index +1) {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[this.state.index + 1]});
+      alert('New driver is: ' + this.state.names[this.state.index] + 
+            "\nNew navigator is: " + this.state.names[this.state.index +1]);
       this.setState({index: this.state.index + 1});
       this.setState({startTime: new Date()});
     } else {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[0]});
+      alert('New driver is: ' + this.state.names[this.state.index] +
+            "\nNew navigator is: " + this.state.names[0]);
       this.setState({index: 0});
       this.setState({startTime: new Date()});
     }
@@ -94,12 +98,8 @@ class PairMobArea extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timerID);
-  }
-
-  componentWillUnmount() {
     clearInterval(this.timerIdInterval);
   }
-
 
   handleNames(event) {
     this.setState({names: event.target.value});
@@ -122,7 +122,7 @@ class PairMobArea extends Component {
       () => this.setRemainingTime(), 1000);
     this.timerIdInterval = setInterval(
       () => this.switchDriverNavigator(),
-      (this.state.time * 1000)
+      (this.state.time * 60000)
     );
   }
 
@@ -144,7 +144,7 @@ class PairMobArea extends Component {
         <label>
           Enter Names:
           <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
-          Enter Time Interval:
+          Enter Time Interval(minutes):
           <input className="inputField" type="text" value={this.state.time} onChange={this.handleTime} />
         </label>
         <button className='Start' onClick={this.handleSubmit}>
