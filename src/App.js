@@ -6,7 +6,7 @@ class App extends Component {
     return (
       <div className="App">
         <h1 className="App-intro">
-          Pair/Mob Space 
+          The Goat House 
         </h1>
         <PairMobArea />
       </div>
@@ -42,7 +42,7 @@ class PairMobArea extends Component {
     super(props);
     this.state = {
       names: '',
-      time: 10,
+      mobbingInterval: '15',
       numberOfMobbers: '',
       index: 0,
       driver: '',
@@ -62,22 +62,24 @@ class PairMobArea extends Component {
     if (this.state.numberOfMobbers > this.state.index +1) {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[this.state.index + 1]});
-      alert('New driver is: ' + this.state.names[this.state.index] + 
-            "\nNew navigator is: " + this.state.names[this.state.index +1]);
+      alert('New driver: ' + this.state.names[this.state.index] + 
+            "\nNew navigator: " + this.state.names[this.state.index +1]);
       this.setState({index: this.state.index + 1});
       this.setState({startTime: new Date()});
+      this.setState({remainingTime: ''});
     } else {
       this.setState({driver: this.state.names[this.state.index]});
       this.setState({navigator: this.state.names[0]});
-      alert('New driver is: ' + this.state.names[this.state.index] +
-            "\nNew navigator is: " + this.state.names[0]);
+      alert('New driver: ' + this.state.names[this.state.index] +
+            "\nNew navigator: " + this.state.names[0]);
       this.setState({index: 0});
       this.setState({startTime: new Date()});
+      this.setState({remainingTime: ''});
     }
   }
 
   setRemainingTime() {
-    var rTime = this.getRemainingTime(new Date());
+    let rTime = this.getRemainingTime(new Date());
     this.setState({remainingTime: rTime});
   }
 
@@ -98,7 +100,6 @@ class PairMobArea extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timerID);
-    clearInterval(this.timerIdInterval);
   }
 
   handleNames(event) {
@@ -106,7 +107,7 @@ class PairMobArea extends Component {
   }
 
   handleTime(event) {
-    this.setState({time: event.target.value});
+    this.setState({mobbingInterval: event.target.value});
   }
 
   handleSubmit() {
@@ -122,7 +123,7 @@ class PairMobArea extends Component {
       () => this.setRemainingTime(), 1000);
     this.timerIdInterval = setInterval(
       () => this.switchDriverNavigator(),
-      (this.state.time * 60000)
+      (this.state.mobbingInterval * 60000)
     );
   }
 
@@ -134,6 +135,8 @@ class PairMobArea extends Component {
     this.setState({display: false});
     this.setState({index: 0});
     this.setState({remainingTime: ''});
+    this.setState({startTime: ''});
+    this.setState({mobbingInterval: 15});
     clearInterval(this.timerID);
     clearInterval(this.timerIdInterval);
   }
@@ -144,8 +147,8 @@ class PairMobArea extends Component {
         <label>
           Enter Names:
           <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
-          Enter Time Interval(minutes):
-          <input className="inputField" type="text" value={this.state.time} onChange={this.handleTime} />
+          Enter Mobbing Time (minutes):
+          <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleTime} />
         </label>
         <button className='Start' onClick={this.handleSubmit}>
           Start
