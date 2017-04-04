@@ -42,6 +42,7 @@ class PairMobArea extends Component {
     super(props);
     this.state = {
       names: '',
+      listNames: [],
       mobbingInterval: '15',
       numberOfMobbers: '',
       index: 0,
@@ -60,18 +61,18 @@ class PairMobArea extends Component {
 
   switchDriverNavigator() {
     if (this.state.numberOfMobbers > this.state.index +1) {
-      this.setState({driver: this.state.names[this.state.index]});
-      this.setState({navigator: this.state.names[this.state.index + 1]});
-      alert('New driver: ' + this.state.names[this.state.index] + 
-            "\nNew navigator: " + this.state.names[this.state.index +1]);
+      this.setState({driver: this.state.listNames[this.state.index]});
+      this.setState({navigator: this.state.listNames[this.state.index + 1]});
+      alert('New driver: ' + this.state.listNames[this.state.index] + 
+            "\nNew navigator: " + this.state.listNames[this.state.index +1]);
       this.setState({index: this.state.index + 1});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
     } else {
-      this.setState({driver: this.state.names[this.state.index]});
-      this.setState({navigator: this.state.names[0]});
-      alert('New driver: ' + this.state.names[this.state.index] +
-            "\nNew navigator: " + this.state.names[0]);
+      this.setState({driver: this.state.listNames[this.state.index]});
+      this.setState({navigator: this.state.listNames[0]});
+      alert('New driver: ' + this.state.listNames[this.state.index] +
+            "\nNew navigator: " + this.state.listNames[0]);
       this.setState({index: 0});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
@@ -113,7 +114,7 @@ class PairMobArea extends Component {
   handleSubmit() {
     let shuffledNames = shuffle(splitNames(this.state.names)); 
     this.setState({numberOfMobbers: shuffledNames.length});
-    this.setState({names: shuffledNames});
+    this.setState({listNames: shuffledNames});
     this.setState({driver: shuffledNames[0]});
     this.setState({navigator: shuffledNames[1]});
     this.setState({display: true});
@@ -129,14 +130,14 @@ class PairMobArea extends Component {
 
   handleCancel() {
     this.setState({numberOfMobbers: ''});
-    this.setState({names: ''});
+    this.setState({listName: []});
     this.setState({driver: ''});
     this.setState({navigator: ''});
     this.setState({display: false});
     this.setState({index: 0});
     this.setState({remainingTime: ''});
     this.setState({startTime: ''});
-    this.setState({mobbingInterval: 15});
+    this.setState({mobbingInterval: this.state.mobbingInterval});
     clearInterval(this.timerID);
     clearInterval(this.timerIdInterval);
   }
@@ -154,7 +155,7 @@ class PairMobArea extends Component {
           Start
         </button>
         <button className='Cancel' onClick={this.handleCancel}>
-          Cancel
+          Stop
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
         <Timer timeLeft={this.state.remainingTime} />
