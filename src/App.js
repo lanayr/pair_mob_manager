@@ -16,14 +16,10 @@ class App extends Component {
 
 function shuffle(array) {  
   var ctr = array.length, temp, index;  
-  
-  // While there are elements in the array  
+
   while (ctr > 0) {  
-  // Pick a random index  
     index = Math.floor(Math.random() * ctr);  
-  // Decrease ctr by 1  
     ctr--;  
-  // And swap the last element with it  
      temp = array[ctr];  
      array[ctr] = array[index];  
      array[index] = temp;  
@@ -42,10 +38,10 @@ class PairMobArea extends Component {
     super(props);
     this.state = {
       names: '',
-      listNames: [],
+      mobbers: [],
       mobbingInterval: '15',
       numberOfMobbers: '',
-      index: 0,
+      position: 0,
       driver: '',
       navigator: '',
       startTime: '',
@@ -56,24 +52,31 @@ class PairMobArea extends Component {
     this.handleTime = this.handleTime.bind(this);
     this.handleNames = this.handleNames.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
+    this.handleStop = this.handleStop.bind(this);
+  }
+
+  alertBox(driver, navigator) {
+    alert("New driver: " + driver + "\nNew navigator: " + navigator);
   }
 
   switchDriverNavigator() {
-    if (this.state.numberOfMobbers > this.state.index +1) {
-      this.setState({driver: this.state.listNames[this.state.index]});
-      this.setState({navigator: this.state.listNames[this.state.index + 1]});
-      alert('New driver: ' + this.state.listNames[this.state.index] + 
-            "\nNew navigator: " + this.state.listNames[this.state.index +1]);
-      this.setState({index: this.state.index + 1});
+    let driver = this.state.mobbers[this.state.position] 
+    if (this.state.numberOfMobbers > this.state.position +1) {
+      let navigator = this.state.mobbers[this.state.position +1] 
+
+      this.alertBox(driver, navigator);
+      this.setState({driver: driver});
+      this.setState({navigator: navigator});
+      this.setState({position: this.state.position + 1});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
     } else {
-      this.setState({driver: this.state.listNames[this.state.index]});
-      this.setState({navigator: this.state.listNames[0]});
-      alert('New driver: ' + this.state.listNames[this.state.index] +
-            "\nNew navigator: " + this.state.listNames[0]);
-      this.setState({index: 0});
+      let navigator = this.state.mobbers[0] 
+
+      this.alertBox(driver, navigator);
+      this.setState({driver: driver});
+      this.setState({navigator: navigator});
+      this.setState({position: 0});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
     }
@@ -85,11 +88,11 @@ class PairMobArea extends Component {
   }
 
   getRemainingTime(endtime){
-    var t = Date.parse(endtime) - Date.parse(this.state.startTime);
-    var seconds = Math.floor( (t/1000) % 60 );
-    var minutes = Math.floor( (t/1000/60) % 60 );
-    var hours = Math.floor( (t/(1000*60*60)) % 24 );
-    var days = Math.floor( t/(1000*60*60*24) );
+    let t = Date.parse(endtime) - Date.parse(this.state.startTime);
+    let seconds = Math.floor( (t/1000) % 60 );
+    let minutes = Math.floor( (t/1000/60) % 60 );
+    let hours = Math.floor( (t/(1000*60*60)) % 24 );
+    let days = Math.floor( t/(1000*60*60*24) );
     return {
       'total': t,
       'days': days,
@@ -112,13 +115,13 @@ class PairMobArea extends Component {
   }
 
   handleSubmit() {
-    let shuffledNames = shuffle(splitNames(this.state.names)); 
-    this.setState({numberOfMobbers: shuffledNames.length});
-    this.setState({listNames: shuffledNames});
-    this.setState({driver: shuffledNames[0]});
-    this.setState({navigator: shuffledNames[1]});
+    let mobbers = shuffle(splitNames(this.state.names)); 
+    this.setState({numberOfMobbers: mobbers.length});
+    this.setState({mobbers: mobbers});
+    this.setState({driver: mobbers[0]});
+    this.setState({navigator: mobbers[1]});
     this.setState({display: true});
-    this.setState({index: 1});
+    this.setState({position: 1});
     this.setState({startTime: new Date()});
     this.timerID = setInterval(
       () => this.setRemainingTime(), 1000);
@@ -128,13 +131,13 @@ class PairMobArea extends Component {
     );
   }
 
-  handleCancel() {
+  handleStop() {
     this.setState({numberOfMobbers: ''});
-    this.setState({listName: []});
+    this.setState({mobbers: []});
     this.setState({driver: ''});
     this.setState({navigator: ''});
     this.setState({display: false});
-    this.setState({index: 0});
+    this.setState({position: 0});
     this.setState({remainingTime: ''});
     this.setState({startTime: ''});
     this.setState({mobbingInterval: this.state.mobbingInterval});
@@ -144,7 +147,7 @@ class PairMobArea extends Component {
 
   render() {
     return (
-      <div classNames='Form'>
+      <div>
         <label>
           Enter Names:
           <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
@@ -154,7 +157,7 @@ class PairMobArea extends Component {
         <button className='Start' onClick={this.handleSubmit}>
           Start
         </button>
-        <button className='Cancel' onClick={this.handleCancel}>
+        <button className='Cancel' onClick={this.handleStop}>
           Stop
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
@@ -166,39 +169,51 @@ class PairMobArea extends Component {
 
 function Display(props) {
   const isDisplayOn = props.display
-    if (isDisplayOn)  {
-      return (
-        <table className="Display">
-          <tr>
-            <th className="Driver">Driver</th>
-            <th className="Navigator">Navigator</th> 
-          </tr>
-          <tr>
-            <td>{props.driver}</td>
-            <td>{props.navigator}</td>
-          </tr>
-        </table>
-      );
-    }
+  if (isDisplayOn)  {
     return (
-      <div>
-      </div>
+      <table className="Display">
+        <tr>
+          <th className="Driver">Driver</th>
+          <th className="Navigator">Navigator</th> 
+        </tr>
+        <tr>
+          <td>{props.driver}</td>
+          <td>{props.navigator}</td>
+        </tr>
+      </table>
     );
+  } else {
+    return (
+      <div></div>
+    );
+  }
 }
 
 function Timer(props) {
   const t = props.timeLeft;
-  if (t)  {
-  return (
-    <div>
-     minutes: {t.minutes} seconds: {t.seconds}
-    </div>
-  );
+  if (t.hours > 0)  {
+    return (
+      <div>
+       Elapsed time: {t.hours} hr(s) {t.minutes} min(s) {t.seconds} sec(s)
+      </div>
+    );
+  } else if (t.minutes > 0)  {
+    return (
+      <div>
+       Elapsed time: {t.minutes} min(s) {t.seconds} sec(s)
+      </div>
+    );
+  } else if (t.seconds > 0) {
+    return (
+      <div>
+        Elapsed time: {t.seconds} sec(s)
+      </div>
+    );
+  } else {
+    return (
+      <div></div>
+    );
   }
-  return (
-    <div>
-    </div>
-  );
 }
 
 export default App;
