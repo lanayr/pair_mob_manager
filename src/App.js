@@ -49,7 +49,7 @@ class PairMobArea extends Component {
       display: false
     };
 
-    this.handleTime = this.handleTime.bind(this);
+    this.handleMobbingInterval = this.handleMobbingInterval.bind(this);
     this.handleNames = this.handleNames.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleStop = this.handleStop.bind(this);
@@ -110,25 +110,31 @@ class PairMobArea extends Component {
     this.setState({names: event.target.value});
   }
 
-  handleTime(event) {
+  handleMobbingInterval(event) {
     this.setState({mobbingInterval: event.target.value});
   }
 
   handleSubmit() {
-    let mobbers = shuffle(splitNames(this.state.names)); 
-    this.setState({numberOfMobbers: mobbers.length});
-    this.setState({mobbers: mobbers});
-    this.setState({driver: mobbers[0]});
-    this.setState({navigator: mobbers[1]});
-    this.setState({display: true});
-    this.setState({position: 1});
-    this.setState({startTime: new Date()});
-    this.timerID = setInterval(
-      () => this.setRemainingTime(), 1000);
-    this.timerIdInterval = setInterval(
-      () => this.switchDriverNavigator(),
-      (this.state.mobbingInterval * 60000)
-    );
+    if (this.state.mobbingInterval === '' || null) {
+      alert("Please enter mobbing interval");
+    } else if (isNaN(this.state.mobbingInterval)) {
+      alert("Please enter number only for mobbing interval") ;
+    } else {
+      let mobbers = shuffle(splitNames(this.state.names)); 
+      this.setState({numberOfMobbers: mobbers.length});
+      this.setState({mobbers: mobbers});
+      this.setState({driver: mobbers[0]});
+      this.setState({navigator: mobbers[1]});
+      this.setState({display: true});
+      this.setState({position: 1});
+      this.setState({startTime: new Date()});
+      this.timerID = setInterval(
+        () => this.setRemainingTime(), 1000);
+      this.timerIdInterval = setInterval(
+        () => this.switchDriverNavigator(),
+        (this.state.mobbingInterval * 60000)
+      );
+    }
   }
 
   handleStop() {
@@ -151,13 +157,13 @@ class PairMobArea extends Component {
         <label>
           Enter Names:
           <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
-          Enter Mobbing Time (minutes):
-          <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleTime} />
+          Enter Mobbing Interval (minutes):
+          <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleMobbingInterval} />
         </label>
         <button className='Start' onClick={this.handleSubmit}>
           Start
         </button>
-        <button className='Cancel' onClick={this.handleStop}>
+        <button className='Stop' onClick={this.handleStop}>
           Stop
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
