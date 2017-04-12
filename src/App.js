@@ -40,16 +40,14 @@ class PairMobArea extends Component {
     this.state = {
       names: '',
       mobbers: [],
-      mobbingInterval: '15',
+      mobbingInterval: '',
       numberOfMobbers: '',
       position: 0,
       driver: '',
       navigator: '',
-      startTime: '',
-      remainingTime: '',
       displayTime: '',
+      isRunning: '',
       display: false,
-      isCountDown: true
     };
 
     this.handleMobbingInterval = this.handleMobbingInterval.bind(this);
@@ -72,9 +70,7 @@ class PairMobArea extends Component {
       this.setState({driver: driver});
       this.setState({navigator: navigator});
       this.setState({position: this.state.position + 1});
-      this.setState({startTime: new Date()});
-      this.setState({remainingTime: ''});
-      this.setState({isCountDown: true});
+      this.setState({remainingTime: this.state.mobbingInterval * 60000});
     } else {
       let navigator = this.state.mobbers[0] 
 
@@ -82,27 +78,15 @@ class PairMobArea extends Component {
       this.setState({driver: driver});
       this.setState({navigator: navigator});
       this.setState({position: 0});
-      this.setState({startTime: new Date()});
-      this.setState({remainingTime: ''});
-      this.setState({isCountDown: true});
+      this.setState({remainingTime: this.state.mobbingInterval * 60000});
     }
   }
 
-  startCountDown() {
-    if (this.state.isCountDown === true)  {
-      let rTime = this.getRemainingTime();
-      this.setState({remainingTime: rTime});
-      this.setState({displayTime: this.displayTime(rTime)});
-    } else {
-      let rTime = (this.state.remainingTime - 1000);
-      this.setState({displayTime: this.displayTime(rTime)});
-      this.setState({remainingTime: rTime});
-    }
+  countDown() {
+    let rTime = ((this.state.remainingTime) - 1000);
+    this.setState({remainingTime: rTime});
+    this.setState({displayTime: this.displayTime(rTime)});
   }
-
-  getRemainingTime(){
-    return ((this.state.mobbingInterval * 60000) - (new Date() - Date.parse(this.state.startTime)));
-   };
 
   displayTime(t){
     let seconds = Math.floor( (t/1000) % 60 );
@@ -141,11 +125,11 @@ class PairMobArea extends Component {
       this.setState({driver: mobbers[0]});
       this.setState({navigator: mobbers[1]});
       this.setState({display: true});
+      this.setState({isRunning: true});
       this.setState({position: 1});
-      this.setState({startTime: new Date()});
-      this.setState({isCountDown: true});
+      this.setState({remainingTime: this.state.mobbingInterval * 60000});
       this.timerID = setInterval(
-        () => this.startCountDown(), 1000);
+        () => this.countDown(), 1000);
       this.timerIdInterval = setInterval(
         () => this.switchDriverNavigator(),
         (this.state.mobbingInterval * 60000)
@@ -154,22 +138,25 @@ class PairMobArea extends Component {
   }
 
   handleStop() {
+    this.setState({display: false});
+    this.setState({names: ''});
     this.setState({numberOfMobbers: ''});
     this.setState({mobbers: []});
     this.setState({driver: ''});
     this.setState({navigator: ''});
     this.setState({position: 0});
     this.setState({remainingTime: ''});
-    this.setState({startTime: ''});
-    this.setState({mobbingInterval: this.state.mobbingInterval});
+    this.setState({mobbingInterval: ''});
+    this.setState({displayTime: ''});
+    this.setState({isRunning: false});
     clearInterval(this.timerID);
     clearInterval(this.timerIdInterval);
-    this.setState({display: false});
   }
 
   handlePause() {
-    this.setState({isCountDown: false});
-    alert("Click OK to continue mobbing") ;
+    if (this.state.isRunning === true) {
+      alert("Click OK to continue mobbing") ;
+    }
   }
 
   render() {

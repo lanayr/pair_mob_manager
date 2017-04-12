@@ -5,19 +5,19 @@ function Timer(props) {
   if (t.hours > 0)  {
     return (
       <div>
-       Elapsed time: {t.hours} hr(s) {t.minutes} min(s) {t.seconds} sec(s)
+       Next switch will happen in: {t.hours} hr(s) {t.minutes} min(s) {t.seconds} sec(s)
       </div>
     );
   } else if (t.minutes > 0)  {
     return (
       <div>
-       Elapsed time: {t.minutes} min(s) {t.seconds} sec(s)
+       Next switch will happen in: {t.minutes} min(s) {t.seconds} sec(s)
       </div>
     );
   } else if (t.seconds > 0) {
     return (
       <div>
-        Elapsed time: {t.seconds} sec(s)
+        Next switch will happen in: {t.seconds} sec(s)
       </div>
     );
   } else {
