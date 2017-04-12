@@ -112,28 +112,32 @@ class PairMobArea extends Component {
   }
 
   handleSubmit() {
-    if (this.state.names === '' || null) {
-      alert("Please enter mobber names") ;
-    } else if (this.state.mobbingInterval === '' || null) {
-      alert("Please enter mobbing interval");
-    } else if (isNaN(this.state.mobbingInterval)) {
-      alert("Please enter number only for mobbing interval") ;
+    if (this.state.isRunning) {
+      alert('There is already a mobbing session running')
     } else {
-      let mobbers = shuffle(splitNames(this.state.names)); 
-      this.setState({numberOfMobbers: mobbers.length});
-      this.setState({mobbers: mobbers});
-      this.setState({driver: mobbers[0]});
-      this.setState({navigator: mobbers[1]});
-      this.setState({display: true});
-      this.setState({isRunning: true});
-      this.setState({position: 1});
-      this.setState({remainingTime: this.state.mobbingInterval * 60000});
-      this.timerID = setInterval(
-        () => this.countDown(), 1000);
-      this.timerIdInterval = setInterval(
-        () => this.switchDriverNavigator(),
-        (this.state.mobbingInterval * 60000)
-      );
+      if (this.state.names === '' || null) {
+        alert("Please enter mobber names") ;
+      } else if (this.state.mobbingInterval === '' || null) {
+        alert("Please enter mobbing interval");
+      } else if (isNaN(this.state.mobbingInterval)) {
+        alert("Please enter number only for mobbing interval") ;
+      } else {
+        let mobbers = shuffle(splitNames(this.state.names)); 
+        this.setState({numberOfMobbers: mobbers.length});
+        this.setState({mobbers: mobbers});
+        this.setState({driver: mobbers[0]});
+        this.setState({navigator: mobbers[1]});
+        this.setState({display: true});
+        this.setState({isRunning: true});
+        this.setState({position: 1});
+        this.setState({remainingTime: this.state.mobbingInterval * 60000});
+        this.timerID = setInterval(
+          () => this.countDown(), 1000);
+        this.timerIdInterval = setInterval(
+          () => this.switchDriverNavigator(),
+          (this.state.mobbingInterval * 60000)
+        );
+      }
     }
   }
 
@@ -155,7 +159,7 @@ class PairMobArea extends Component {
 
   handlePause() {
     if (this.state.isRunning === true) {
-      alert("Click OK to continue mobbing") ;
+      alert("Mobbing is paused click OK to resume") ;
     }
   }
 
