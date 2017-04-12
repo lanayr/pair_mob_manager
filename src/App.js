@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import Timer from './Timer.js';
 
 class App extends Component {
   render() {
@@ -46,13 +47,16 @@ class PairMobArea extends Component {
       navigator: '',
       startTime: '',
       remainingTime: '',
-      display: false
+      displayTime: '',
+      display: false,
+      isCountDown: true
     };
 
     this.handleMobbingInterval = this.handleMobbingInterval.bind(this);
     this.handleNames = this.handleNames.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleStop = this.handleStop.bind(this);
+    this.handlePause = this.handlePause.bind(this);
   }
 
   alertBox(driver, navigator) {
@@ -70,6 +74,7 @@ class PairMobArea extends Component {
       this.setState({position: this.state.position + 1});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
+      this.setState({isCountDown: true});
     } else {
       let navigator = this.state.mobbers[0] 
 
@@ -79,16 +84,27 @@ class PairMobArea extends Component {
       this.setState({position: 0});
       this.setState({startTime: new Date()});
       this.setState({remainingTime: ''});
+      this.setState({isCountDown: true});
     }
   }
 
-  setRemainingTime() {
-    let rTime = this.getRemainingTime(new Date());
-    this.setState({remainingTime: rTime});
+  startCountDown() {
+    if (this.state.isCountDown === true)  {
+      let rTime = this.getRemainingTime();
+      this.setState({remainingTime: rTime});
+      this.setState({displayTime: this.displayTime(rTime)});
+    } else {
+      let rTime = (this.state.remainingTime - 1000);
+      this.setState({displayTime: this.displayTime(rTime)});
+      this.setState({remainingTime: rTime});
+    }
   }
 
-  getRemainingTime(endtime){
-    let t = Date.parse(endtime) - Date.parse(this.state.startTime);
+  getRemainingTime(){
+    return ((this.state.mobbingInterval * 60000) - (new Date() - Date.parse(this.state.startTime)));
+   };
+
+  displayTime(t){
     let seconds = Math.floor( (t/1000) % 60 );
     let minutes = Math.floor( (t/1000/60) % 60 );
     let hours = Math.floor( (t/(1000*60*60)) % 24 );
@@ -102,9 +118,6 @@ class PairMobArea extends Component {
    };
 } 
 
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
 
   handleNames(event) {
     this.setState({names: event.target.value});
@@ -115,7 +128,9 @@ class PairMobArea extends Component {
   }
 
   handleSubmit() {
-    if (this.state.mobbingInterval === '' || null) {
+    if (this.state.names === '' || null) {
+      alert("Please enter mobber names") ;
+    } else if (this.state.mobbingInterval === '' || null) {
       alert("Please enter mobbing interval");
     } else if (isNaN(this.state.mobbingInterval)) {
       alert("Please enter number only for mobbing interval") ;
@@ -128,8 +143,9 @@ class PairMobArea extends Component {
       this.setState({display: true});
       this.setState({position: 1});
       this.setState({startTime: new Date()});
+      this.setState({isCountDown: true});
       this.timerID = setInterval(
-        () => this.setRemainingTime(), 1000);
+        () => this.startCountDown(), 1000);
       this.timerIdInterval = setInterval(
         () => this.switchDriverNavigator(),
         (this.state.mobbingInterval * 60000)
@@ -142,13 +158,18 @@ class PairMobArea extends Component {
     this.setState({mobbers: []});
     this.setState({driver: ''});
     this.setState({navigator: ''});
-    this.setState({display: false});
     this.setState({position: 0});
     this.setState({remainingTime: ''});
     this.setState({startTime: ''});
     this.setState({mobbingInterval: this.state.mobbingInterval});
     clearInterval(this.timerID);
     clearInterval(this.timerIdInterval);
+    this.setState({display: false});
+  }
+
+  handlePause() {
+    this.setState({isCountDown: false});
+    alert("Click OK to continue mobbing") ;
   }
 
   render() {
@@ -163,11 +184,14 @@ class PairMobArea extends Component {
         <button className='Start' onClick={this.handleSubmit}>
           Start
         </button>
+        <button className='Pause' onClick={this.handlePause}>
+          Pause
+        </button>
         <button className='Stop' onClick={this.handleStop}>
           Stop
         </button>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
-        <Timer timeLeft={this.state.remainingTime} />
+        <Timer timeLeft={this.state.displayTime} />
       </div>
     );
   }
@@ -178,42 +202,17 @@ function Display(props) {
   if (isDisplayOn)  {
     return (
       <table className="Display">
-        <tr>
-          <th className="Driver">Driver</th>
-          <th className="Navigator">Navigator</th> 
-        </tr>
-        <tr>
-          <td>{props.driver}</td>
-          <td>{props.navigator}</td>
-        </tr>
+        <tbody>
+          <tr>
+            <th className="Driver">Driver</th>
+            <th className="Navigator">Navigator</th> 
+          </tr>
+          <tr>
+            <td>{props.driver}</td>
+            <td>{props.navigator}</td>
+          </tr>
+          </tbody>
       </table>
-    );
-  } else {
-    return (
-      <div></div>
-    );
-  }
-}
-
-function Timer(props) {
-  const t = props.timeLeft;
-  if (t.hours > 0)  {
-    return (
-      <div>
-       Elapsed time: {t.hours} hr(s) {t.minutes} min(s) {t.seconds} sec(s)
-      </div>
-    );
-  } else if (t.minutes > 0)  {
-    return (
-      <div>
-       Elapsed time: {t.minutes} min(s) {t.seconds} sec(s)
-      </div>
-    );
-  } else if (t.seconds > 0) {
-    return (
-      <div>
-        Elapsed time: {t.seconds} sec(s)
-      </div>
     );
   } else {
     return (
