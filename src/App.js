@@ -172,15 +172,9 @@ class PairMobArea extends Component {
           Enter Mobbing Interval (minutes):
           <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleMobbingInterval} />
         </label>
-        <button className='Start' onClick={this.handleSubmit}>
-          Start
-        </button>
-        <button className='Pause' onClick={this.handlePause}>
-          Pause
-        </button>
-        <button className='Stop' onClick={this.handleStop}>
-          Stop
-        </button>
+        {!this.state.isRunning ? <button className='Start' onClick={this.handleSubmit}>Start</button> : null}
+        {this.state.isRunning ? <button className='Pause' onClick={this.handlePause}>Pause</button> : null}
+        {this.state.isRunning ? <button className='Stop' onClick={this.handleStop}>Stop</button> : null}
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
         <Timer timeLeft={this.state.displayTime} />
       </div>
