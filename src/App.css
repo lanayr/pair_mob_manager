@@ -40,8 +40,10 @@
 
 .Start {
   text-align: center;
+  width: 12%;
+  length: 12%;
   background-color: #2eb82e;
-  font-size: large;
+  font-size: medium;
   color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -50,8 +52,10 @@
 
 .Stop {
   text-align: center;
+  width: 12%;
+  length: 12%;
   background-color: #ff0000;
-  font-size: large;
+  font-size: medium;
   color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -60,13 +64,28 @@
 
 .Pause {
   text-align: center;
+  width: 12%;
+  length: 12%;
   background-color: grey;
-  font-size: large;
+  font-size: medium;
   color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 4px;
 }
+
+.Resume {
+  text-align: center;
+  width: 12%;
+  length: 12%;
+  background-color: orange;
+  font-size: medium;
+  color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 4px;
+}
+
 .App-intro {
   font-family: "Lucida Console", Monaco, monospace;
   background-color: #2eb82e;

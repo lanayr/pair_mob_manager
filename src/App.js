@@ -47,6 +47,7 @@ class PairMobArea extends Component {
       navigator: '',
       displayTime: '',
       isRunning: '',
+      isPause: '',
       display: false,
     };
 
@@ -55,6 +56,7 @@ class PairMobArea extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleStop = this.handleStop.bind(this);
     this.handlePause = this.handlePause.bind(this);
+    this.handleResume = this.handleResume.bind(this);
   }
 
   alertBox(driver, navigator) {
@@ -83,9 +85,17 @@ class PairMobArea extends Component {
   }
 
   countDown() {
-    let rTime = ((this.state.remainingTime) - 1000);
-    this.setState({remainingTime: rTime});
-    this.setState({displayTime: this.displayTime(rTime)});
+    if (this.state.remainingTime <= 0) {
+      this.switchDriverNavigator();
+    } else {
+      if (this.state.isPause) {
+        return
+      } else {
+        let rTime = ((this.state.remainingTime) - 1000);
+        this.setState({remainingTime: rTime});
+        this.setState({displayTime: this.displayTime(rTime)});
+      }
+    }
   }
 
   displayTime(t){
@@ -99,9 +109,8 @@ class PairMobArea extends Component {
       'hours': hours,
       'minutes': minutes,
       'seconds': seconds
-   };
-} 
-
+    };
+  } 
 
   handleNames(event) {
     this.setState({names: event.target.value});
@@ -111,33 +120,26 @@ class PairMobArea extends Component {
     this.setState({mobbingInterval: event.target.value});
   }
 
-  handleSubmit() {
-    if (this.state.isRunning) {
-      alert('There is already a mobbing session running')
+  handleSubmit(event) {
+    if (this.state.names === '' || null) {
+      alert("Please enter mobber names") ;
+    } else if (this.state.mobbingInterval === '' || null) {
+      alert("Please enter mobbing interval");
+    } else if (isNaN(this.state.mobbingInterval)) {
+      alert("Please enter number only for mobbing interval") ;
     } else {
-      if (this.state.names === '' || null) {
-        alert("Please enter mobber names") ;
-      } else if (this.state.mobbingInterval === '' || null) {
-        alert("Please enter mobbing interval");
-      } else if (isNaN(this.state.mobbingInterval)) {
-        alert("Please enter number only for mobbing interval") ;
-      } else {
-        let mobbers = shuffle(splitNames(this.state.names)); 
-        this.setState({numberOfMobbers: mobbers.length});
-        this.setState({mobbers: mobbers});
-        this.setState({driver: mobbers[0]});
-        this.setState({navigator: mobbers[1]});
-        this.setState({display: true});
-        this.setState({isRunning: true});
-        this.setState({position: 1});
-        this.setState({remainingTime: this.state.mobbingInterval * 60000});
-        this.timerID = setInterval(
-          () => this.countDown(), 1000);
-        this.timerIdInterval = setInterval(
-          () => this.switchDriverNavigator(),
-          (this.state.mobbingInterval * 60000)
-        );
-      }
+      let mobbers = shuffle(splitNames(this.state.names)); 
+      this.setState({numberOfMobbers: mobbers.length});
+      this.setState({mobbers: mobbers});
+      this.setState({driver: mobbers[0]});
+      this.setState({navigator: mobbers[1]});
+      this.setState({display: true});
+      this.setState({isRunning: true});
+      this.setState({position: 1});
+      this.setState({remainingTime: this.state.mobbingInterval * 60000});
+      this.timerID = setInterval(
+        () => this.countDown(), 1000);
+      event.preventDefault();
     }
   }
 
@@ -153,28 +155,35 @@ class PairMobArea extends Component {
     this.setState({mobbingInterval: ''});
     this.setState({displayTime: ''});
     this.setState({isRunning: false});
+    this.setState({isPause: false});
     clearInterval(this.timerID);
     clearInterval(this.timerIdInterval);
   }
 
   handlePause() {
-    if (this.state.isRunning === true) {
-      alert("Mobbing is paused click OK to resume") ;
-    }
+    this.setState({isPause: true});
+    this.setState({isRunning: false});
   }
 
+  handleResume() {
+    this.setState({isPause: false});
+    this.setState({isRunning: true});
+  }
   render() {
     return (
       <div>
-        <label>
-          Enter Names:
-          <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
-          Enter Mobbing Interval (minutes):
-          <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleMobbingInterval} />
-        </label>
-        {!this.state.isRunning ? <button className='Start' onClick={this.handleSubmit}>Start</button> : null}
-        {this.state.isRunning ? <button className='Pause' onClick={this.handlePause}>Pause</button> : null}
-        {this.state.isRunning ? <button className='Stop' onClick={this.handleStop}>Stop</button> : null}
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Enter Names:
+            <input className="inputField" type="text" value={this.state.names} onChange={this.handleNames} />
+            Enter Mobbing Interval (minutes):
+            <input className="inputField" type="text" value={this.state.mobbingInterval} onChange={this.handleMobbingInterval} />
+          </label>
+          {!this.state.isRunning && !this.state.isPause ? <input type='submit' className='Start' value="Start" /> : null}
+          {this.state.isRunning ? <button className='Pause' onClick={this.handlePause}>Pause</button> : null}
+          {this.state.isPause ? <button className='Resume' onClick={this.handleResume}>Resume</button> : null}
+          {this.state.isRunning || this.state.isPause ? <button className='Stop' onClick={this.handleStop}>Stop</button> : null}
+        </form>
         <Display className='Display' display={this.state.display} driver={this.state.driver} navigator={this.state.navigator}/>
         <Timer timeLeft={this.state.displayTime} />
       </div>
